@@ -37,6 +37,35 @@ object Streams extends App :
     def iterate[A](init: => A)(next: A => A): Stream[A] =
       cons(init, iterate(next(init))(next))
 
+    def takeWhile[A](stream: Stream[A])(pred: A => Boolean): Stream[A] = stream match
+      case Cons(h, t) if pred(h()) => cons(h(), takeWhile(t())(pred))
+      case _ => Empty()
+
+    def fill[A](n: Int)(k: A): Stream[A] = n match
+      case _ if n > 0 => cons(k, fill(n - 1)(k))
+      case _ => Empty()
+
+    val fibonacci: Stream[Int] =
+      def fibs(a: Int, b: Int): Stream[Int] = cons(a, fibs(b, a + b))
+      fibs(0, 1)
+
+    def fromList[A](list: List[A]): Stream[A] =
+      list match
+        case head :: tail => cons(head, fromList(tail))
+        case Nil => Empty()
+
+    def interleave[A](s1: Stream[A], s2: Stream[A]): Stream[A] = (s1, s2) match
+      case (Cons(h1, t1), Cons(h2, t2)) => cons(h1(), cons(h2(), interleave(t1(), t2())))
+      case (Cons(h1, t1), Empty()) => cons(h1(), interleave(t1(), Empty()))
+      case (Empty(), Cons(h2, t2)) => cons(h2(), interleave(Empty(), t2()))
+      case _ => Empty()
+
+    def cycle[A](lst: Sequence[A]): Stream[A] =
+      def cycleFrom(s: Sequence[A]): Stream[A] = s match
+        case Sequence.Cons(h, t) => cons(h, cycleFrom(t))
+        case Sequence.Nil() => cycleFrom(lst)
+      cycleFrom(lst)
+
   end Stream
 
 @main def tryStreams =

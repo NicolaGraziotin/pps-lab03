@@ -5,7 +5,7 @@ import it.unibo.pps.u03.PersonSequence.Person.*
 import org.junit.*
 import org.junit.Assert.*
 import u03.Sequences.Sequence
-import u03.Sequences.Sequence.{Cons, Nil}
+import u03.Sequences.Sequence.*
 
 class PersonSequenceTest {
 
